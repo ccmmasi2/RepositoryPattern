@@ -1,7 +1,12 @@
+using Microsoft.EntityFrameworkCore;
 using Pattern.Repository.API.Services;
 using Pattern.Repository.Core.BaseRepository;
+using Pattern.Repository.Core.Context;
+using Pattern.Repository.Core.Models;
+using Pattern.Repository.Core.ObjectRepository;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
 builder.Services.AddCors(options =>
 {
@@ -22,7 +27,13 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<ProductService>();
 
+builder.Services.AddDbContext<SqlServerDbContext>(options =>
+    options.UseSqlServer(configuration.GetConnectionString("SqlServerConnection")));
+
 builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(SqlServerRepository<>));
+
+builder.Services.AddScoped<IBaseRepository<CategoryDTO>, CategoryRepository>();
+builder.Services.AddScoped<IBaseRepository<ProductDTO>, ProductRepository>();
 
 var app = builder.Build();
 

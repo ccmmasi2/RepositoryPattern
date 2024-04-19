@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Pattern.Repository.API.Services;
-using Pattern.Repository.Core.BaseRepository;
-using Pattern.Repository.Core.Models;
 
 namespace Pattern.Repository.API.Controllers
 {

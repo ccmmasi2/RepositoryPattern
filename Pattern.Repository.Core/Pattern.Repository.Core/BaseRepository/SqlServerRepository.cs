@@ -1,30 +1,49 @@
-﻿namespace Pattern.Repository.Core.BaseRepository
+﻿using Microsoft.EntityFrameworkCore;
+using Pattern.Repository.Core.Context;
+
+namespace Pattern.Repository.Core.BaseRepository
 {
     public class SqlServerRepository<T> : IBaseRepository<T> where T : class
     {
-        public Task AddAsync(T entity)
+        private readonly SqlServerDbContext _context;
+        private readonly DbSet<T> _dbSet;
+
+        public SqlServerRepository(SqlServerDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+            _dbSet = context.Set<T>();
         }
 
-        public Task DeleteAsync(int id)
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _dbSet.ToListAsync();
         }
 
-        public Task<IEnumerable<T>> GetAllAsync()
+        public async Task<T> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _dbSet.FindAsync(id);
         }
 
-        public Task<T> GetByIdAsync(int id)
+        public async Task AddAsync(T entity)
         {
-            throw new NotImplementedException();
+            _context.Add(entity);
+            await _context.SaveChangesAsync();
         }
 
-        public Task UpdateAsync(T entity)
+        public async Task UpdateAsync(T entity)
         {
-            throw new NotImplementedException();
+            _context.Entry(entity).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var entity = await _dbSet.FindAsync(id);
+            if (entity != null)
+            {
+                _dbSet.Remove(entity);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }
